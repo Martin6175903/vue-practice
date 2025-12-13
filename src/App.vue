@@ -18,19 +18,20 @@
     </my-dialog>
     <post-list :posts="sortedAndSearchedPosts" @remove="removePost" v-if="!isPostsLoading" />
     <div v-else>Идёт загрузка...</div>
-    <div class="page__wrapper">
-      <div
-        class="page"
-        v-for="pageNum in totalPages"
-        :key="pageNum"
-        :class="{
-          'current-page': page === pageNum,
-        }"
-        @click="changePage(pageNum)"
-      >
-        {{ pageNum }}
-      </div>
-    </div>
+    <div ref="observer" class="observer"/>
+    <!--    <div class="page__wrapper">-->
+    <!--      <div-->
+    <!--        class="page"-->
+    <!--        v-for="pageNum in totalPages"-->
+    <!--        :key="pageNum"-->
+    <!--        :class="{-->
+    <!--          'current-page': page === pageNum,-->
+    <!--        }"-->
+    <!--        @click="changePage(pageNum)"-->
+    <!--      >-->
+    <!--        {{ pageNum }}-->
+    <!--      </div>-->
+    <!--    </div>-->
   </div>
 </template>
 
@@ -72,10 +73,10 @@ export default {
     hideDialog() {
       this.dialogVisible = false
     },
-    changePage(pageNum: number) {
-      this.page = pageNum;
-      this.fetchPosts();
-    },
+    // changePage(pageNum: number) {
+    //   this.page = pageNum;
+    //   this.fetchPosts();
+    // },
     async fetchPosts() {
       try {
         this.isPostsLoading = true;
@@ -94,9 +95,39 @@ export default {
         this.isPostsLoading = false;
       }
     },
+    async loadMorePosts() {
+      try {
+        this.page += 1;
+
+        const response = await axios.get('https://jsonplaceholder.typicode.com/posts', {
+          params: {
+            _page: this.page,
+            _limit: this.limit,
+          }
+        });
+        // this.totalPages = Math.ceil(response.headers['x-total-count'] / this.limit);
+        this.posts = [...this.posts, ...response.data];
+      } catch (e) {
+        alert('Ошибка получения данных!');
+      }
+    },
   },
   mounted() {
     this.fetchPosts();
+
+    const options = {
+      rootMargin: "0px",
+      threshold: 1.0,
+    };
+
+    const callback: IntersectionObserverCallback = (entries, observer) => {
+      if (entries[0]?.isIntersecting && this.page < this.totalPages) {
+        this.loadMorePosts();
+      }
+    };
+
+    const observer = new IntersectionObserver(callback, options);
+    observer.observe(this.$refs.observer as HTMLDivElement);
   },
   computed: {
     sortedPosts() {
@@ -110,11 +141,11 @@ export default {
       return this.sortedPosts.filter((post) => post.title.toLowerCase().includes(this.searchQuery.toLowerCase()));
     },
   },
-  watch: {
-    page() {
-      this.fetchPosts();
-    }
-  }
+  // watch: {
+  //   page() {
+  //     this.fetchPosts();
+  //   }
+  // }
 }
 </script>
 
@@ -134,6 +165,11 @@ export default {
   justify-content: space-between;
   margin: 15px 0;
   align-items: stretch;
+}
+
+.observer {
+  height: 30px;
+  background: green;
 }
 
 .page__wrapper {
