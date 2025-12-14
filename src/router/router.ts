@@ -3,6 +3,8 @@ import MainPage from '@/pages/MainPage.vue'
 import PostPage from '@/pages/PostPage.vue'
 import AboutPage from '@/pages/AboutPage.vue'
 import PostPageById from '@/pages/PostPageById.vue'
+import PostPageWithStore from '@/pages/PostPageWithStore.vue'
+import PostPageComposition from '@/pages/PostPageComposition.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -20,6 +22,14 @@ const routes: RouteRecordRaw[] = [
   {
     path: "/posts/:id",
     component: PostPageById,
+  },
+  {
+    path: "/store",
+    component: PostPageWithStore,
+  },
+  {
+    path: "/composition",
+    component: PostPageComposition,
   }
 ];
 

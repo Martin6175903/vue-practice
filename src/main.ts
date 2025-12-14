@@ -3,11 +3,13 @@ import App from "./App.vue";
 import MyButton from "@/components/UI/MyButton.vue";
 import MyInput from "@/components/UI/MyInput.vue";
 import MyDialog from "@/components/UI/MyDialog.vue";
-import MySelect from '@/components/UI/MySelect.vue'
-import router from '@/router/router.ts'
-import directives from '@/directives'
+import MySelect from '@/components/UI/MySelect.vue';
+import router from '@/router/router.ts';
+import directives from '@/directives';
+import { createPinia } from 'pinia'
 
 const app = createApp(App);
+const pinia = createPinia();
 
 app.component('my-button', MyButton);
 app.component('my-input', MyInput);
@@ -20,4 +22,5 @@ directives.forEach(({ name, directive }) => {
 
 app
   .use(router)
+  .use(pinia)
   .mount('#app');
