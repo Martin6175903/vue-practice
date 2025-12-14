@@ -11,6 +11,7 @@
       </div>
     </div>
     <div class="post__btns">
+      <my-button @click="$router.push(`/posts/${post.id}`)">Открыть</my-button>
       <my-button @click="$emit('remove', post)">Удалить</my-button>
     </div>
   </div>
@@ -42,5 +43,9 @@ import {defineComponent, type PropType} from 'vue'
     &:not(:first-child) {
       margin-top: 15px;
     }
+  }
+  .post__btns {
+    display: flex;
+    gap: 5px;
   }
 </style>
